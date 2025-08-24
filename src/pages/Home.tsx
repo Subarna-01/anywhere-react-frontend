@@ -16,31 +16,37 @@ import {
     InputAdornment,
     MenuItem,
     Select,
-    CircularProgress
+    CircularProgress,
+    Link
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import FlagIcon from 'react-country-flag'
 import SendIcon from '@mui/icons-material/Send'
-import img_220331 from '../assets/220331.jpeg'
-import img_220332 from '../assets/220332.jpeg'
-import img_220356 from '../assets/220356.jpeg'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import img_220331 from '../assets/220331.webp'
+import img_220332 from '../assets/220332.jpg'
+import img_220356 from '../assets/220356.jpg'
 import img_230515 from '../assets/230515.jpg'
+import img_233415 from '../assets/233415.jpg'
 
 const tourPackages = [
     {
         packageName: 'Bhutan Bliss: A 3N/4D Himalayan Escape',
         packageDescription: 'Experience the serene beauty and rich culture of Bhutan in a magical 3N/4D getaway to Thimphu and Paro.',
-        coverImage: img_220331
+        coverImage: img_220331,
+        tourPackageName: 'Bhutan Tour Package (3N/4D)'
     },
     {
         packageName: 'Bhutan Bliss: A 5N/6D Cultural Sojourn',
         packageDescription: 'Delve into Bhutan\'s timeless charm over 6 days, exploring sacred monasteries, lush valleys, and the vibrant local life of Thimphu, Paro, and Punakha.',
-        coverImage: img_220332
+        coverImage: img_220332,
+        tourPackageName: 'Bhutan Tour Package (5N/6D)'
     },
     {
         packageName: 'Bhutan Bliss: A 9N/10D Himalayan Journey',
         packageDescription: 'Embark on a soul-stirring 9N/10D journey through Bhutan\'s stunning landscapes, ancient monasteries, and vibrant culture from Paro to Bumthang and beyond.',
-        coverImage: img_220356
+        coverImage: img_220356,
+        tourPackageName: 'Bhutan Tour Package (9N/10D)'
     },
 ]
 
@@ -57,10 +63,13 @@ export const Home: React.FC = () => {
     const [email, setEmail] = React.useState('')
     const [phone, setPhone] = React.useState('')
     const [countryCode, setCountryCode] = React.useState('+91')
-    const [errors, setErrors] = React.useState<{ name?: string; email?: string; phone?: string }>({})
+    const [startDate, setStartDate] = React.useState('')
+    const [selectedPackage, setSelectedPackage] = React.useState('')
+    const [errors, setErrors] = React.useState<{ name?: string; email?: string; phone?: string; startDate?: string }>({})
     const [loading, setLoading] = React.useState(false)
-    const [visible, setVisible] = React.useState(false)
     const [isSubmitted, setIsSubmitted] = React.useState(false)
+    const [responseError, setResponseError] = React.useState(false)
+    const [visible, setVisible] = React.useState(false)
     const [animatedTitleText, setAnimatedTitleText] = React.useState('')
     const headerRef = React.useRef<HTMLDivElement>(null)
     const titleText = 'Explore the Enchanted Kingdom of Bhutan!'
@@ -68,32 +77,58 @@ export const Home: React.FC = () => {
     const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
     const validatePhoneNumber = (val: string) => /^[0-9]+$/.test(val)
 
-    const handleDialogBoxOpen = () => setIsDialogBoxVisible(true)
+    const handleDialogBoxOpen = (pkgName: string) => {
+        setSelectedPackage(pkgName)
+        setIsDialogBoxVisible(true)
+    }
+
     const handleDialogBoxClose = () => {
         setName('')
         setPhone('')
         setEmail('')
+        setStartDate('')
         setErrors({})
         setIsSubmitted(false)
+        setResponseError(false)
         setIsDialogBoxVisible(false)
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const newErrors: typeof errors = {}
         if (!name.trim()) newErrors.name = 'Name is required'
         if (!email.trim()) newErrors.email = 'Email is required'
         else if (!validateEmail(email)) newErrors.email = 'Invalid email address'
         if (!phone.trim()) newErrors.phone = 'Phone number is required'
         else if (!validatePhoneNumber(phone)) newErrors.phone = 'Phone number must be digits only'
+        if (!startDate.trim()) newErrors.startDate = 'Start date is required'
         setErrors(newErrors)
         if (Object.keys(newErrors).length === 0) {
             setLoading(true)
             setIsSubmitted(false)
-            setTimeout(() => {
+            setResponseError(false)
+            try {
+                const res = await fetch('https://anywhere-fastapi-backend.onrender.com/mail/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: name,
+                        customer_email: email,
+                        customer_phone: `${countryCode}-${phone}`,
+                        tour_package_name: selectedPackage,
+                        tour_start_date: startDate
+                    })
+                })
+                const data = await res.json()
+                if (data.status_code === 200) {
+                    setIsSubmitted(true)
+                } else {
+                    setResponseError(true)
+                }
+            } catch {
+                setResponseError(true)
+            } finally {
                 setLoading(false)
-                setIsSubmitted(true)
-            }, 2000)
-            console.log(`Name: ${name}, Email: ${email}, Phone Number: ${countryCode}-${phone}`)
+            }
         }
     }
 
@@ -205,63 +240,25 @@ export const Home: React.FC = () => {
                 sx={{
                     px: 2,
                     py: 2,
-                    display: 'grid',
+                    display: { xs: 'flex', sm: 'grid' },
                     gap: 2,
-                    gridTemplateColumns: {
-                        xs: '1fr',
-                        sm: '1fr 1fr',
-                        md: '1fr 1fr 1fr',
-                    },
+                    gridTemplateColumns: { sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+                    overflowX: { xs: 'auto', sm: 'unset' },
+                    scrollSnapType: { xs: 'x mandatory', sm: 'unset' }
                 }}
             >
                 {tourPackages.map((pkg, idx) => (
-                    <Card
-                        key={idx}
-                        sx={{
-                            minHeight: 200,
-                            maxWidth: 450,
-                            mx: 'auto',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            borderRadius: 0,
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                            transition: 'transform 0.3s, box-shadow 0.3s',
-                            '&:hover': {
-                                transform: 'translateY(-5px)',
-                                boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
-                            },
-                        }}
-                    >
-                        <CardMedia
-                            sx={{ height: 175 }}
-                            image={pkg?.coverImage}
-                            title="Tiger\'s Nest"
-                        />
+                    <Card key={idx} sx={{ flex: { xs: '0 0 100%', sm: 'unset' }, scrollSnapAlign: { xs: 'center', sm: 'unset' }, borderRadius: 0 }}>
+                        <CardMedia sx={{ height: 200 }} image={pkg.coverImage} />
                         <CardContent>
-                            <Typography variant='h5' component='div'>
-                                {pkg?.packageName}
-                            </Typography>
-                            <Typography
-                                component='div'
-                                color='text.secondary'
-                                sx={{
-                                    mt: 1,
-                                }}
-                            >
-                                {pkg?.packageDescription}
-                            </Typography>
+                            <Typography variant='h5'>{pkg.packageName}</Typography>
+                            <Typography color='text.secondary'>{pkg.packageDescription}</Typography>
                         </CardContent>
-                        <CardActions sx={{ py: 2.5, justifyContent: 'center' }}>
+                        <CardActions sx={{ justifyContent: 'center' }}>
                             <Button
                                 variant='contained'
-                                sx={{
-                                    borderRadius: 25,
-                                    color: '#fff',
-                                    backgroundColor: '#000',
-                                    textTransform: 'none'
-                                }}
-                                onClick={handleDialogBoxOpen}
+                                sx={{ borderRadius: 25, backgroundColor: '#000', color: '#fff' }}
+                                onClick={() => handleDialogBoxOpen(pkg.tourPackageName)}
                             >
                                 Book Now
                             </Button>
@@ -273,37 +270,77 @@ export const Home: React.FC = () => {
                 sx={{
                     py: 10,
                     display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
                     justifyContent: 'center',
                     alignItems: 'center',
-                    textAlign: 'center',
+                    textAlign: { xs: 'center', md: 'left' },
                     px: 2,
+                    gap: 4,
                 }}
             >
-                <Typography
-                    variant='h4'
-                    sx={{
-                        px: 4,
-                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
-                        maxWidth: '50rem',
-                    }}
-                >
-                    Go Anywhere. Feel Everything.
-                </Typography>
-            </Box>
-            <Dialog
-                open={isDialogBoxVisible}
-                onClose={handleDialogBoxClose}
-                fullWidth
-                maxWidth='sm'
-                PaperProps={{ sx: { borderRadius: 0 } }}
-            >
-                <DialogTitle sx={{ m: 0, p: 2, pr: 5 }}>
-                    Get a Quote
-                    <IconButton
-                        aria-label='close'
-                        onClick={handleDialogBoxClose}
-                        sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' }, px: { xs: 0, md: 0 } }}>
+                    <Typography
+                        variant='h4'
+                        sx={{
+                            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+                            mb: 2,
+                            fontWeight: '700',
+                            textAlign: { xs: 'center', md: 'left' },
+                            background: 'linear-gradient(90deg, #ff8a00, #e52e71)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            color: 'transparent'
+                        }}
                     >
+                        Know About Bhutan
+                    </Typography>
+                    <Typography
+                        sx={{
+                            maxWidth: '45rem',
+                            fontSize: { xs: '0.95rem', sm: '1rem', md: '1.15rem' },
+                            textAlign: { xs: 'center', md: 'left' }
+                        }}
+                    >
+                        Bhutan, the Land of the Thunder Dragon, is known for its pristine natural beauty,
+                        spiritual heritage, and Gross National Happiness. From the cliffside Tiger’s Nest
+                        Monastery to the lush valleys of Paro and Punakha, Bhutan offers an unforgettable
+                        journey where tradition and tranquility coexist.
+                    </Typography>
+                    <Link
+                        href='https://www.indembthimphu.gov.in/pages/MzE5'
+                        target='_blank'
+                        underline='hover'
+                        sx={{
+                            mt: 3,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                            textAlign: { xs: 'center', md: 'left' },
+                            fontSize: { xs: '0.75rem', sm: '0.95rem', md: '1rem' },
+                            color: '#f97316',
+                            '&:hover': { color: '#c2410c' }
+                        }}
+                    >
+                        View documents required to travel for Indians
+                        <OpenInNewIcon fontSize='small' />
+                    </Link>
+                </Box>
+                <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                    <Box
+                        component='img'
+                        src={img_233415}
+                        alt='Dochula Pass'
+                        sx={{ width: '100%', maxWidth: 600 }}
+                    />
+                </Box>
+            </Box>
+            <Dialog open={isDialogBoxVisible} onClose={handleDialogBoxClose} fullWidth maxWidth='sm' PaperProps={{ sx: { borderRadius: 0 } }}>
+                <DialogTitle>
+                    Get a Quote
+                    <IconButton onClick={handleDialogBoxClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
@@ -312,88 +349,34 @@ export const Home: React.FC = () => {
                         <CircularProgress sx={{ color: '#000' }} />
                     </Box>
                 ) : isSubmitted ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-                        <Typography
-                            variant='h6'
-                            align='center'
-                            sx={{
-                                fontSize: { xs: '1rem', sm: '1.25rem', md: '1.25rem' }
-                            }}
-                        >
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', minHeight: 200, px: 3 }}>
+                        <Typography sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
                             We have received your request, we will get back to you soon!
+                        </Typography>
+                    </Box>
+                ) : responseError ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', minHeight: 200, px: 3 }}>
+                        <Typography sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
+                            Something went wrong, please try again later.
                         </Typography>
                     </Box>
                 ) : (
                     <>
-                        <DialogContent sx={{ display: 'flex', flexDirection: 'column' }}>
-                            <TextField
-                                label='Name'
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value)
-                                    if (errors.name) setErrors({ ...errors, name: undefined })
-                                }}
-                                fullWidth
-                                margin='normal'
-                                error={!!errors.name}
-                                helperText={errors.name}
-                                required
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '&.Mui-focused fieldset': { borderColor: '#000' },
-                                    },
-                                    '& .MuiInputLabel-root': { '&.Mui-focused': { color: '#000' } },
-                                }}
-                                FormHelperTextProps={{ sx: { marginLeft: 0 } }}
-                            />
-                            <TextField
-                                label='Email'
-                                type='email'
-                                onChange={(e) => {
-                                    setEmail(e.target.value)
-                                    if (errors.email) setErrors({ ...errors, email: undefined })
-                                }}
-                                fullWidth
-                                margin='normal'
-                                error={!!errors.email}
-                                helperText={errors.email}
-                                required
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '&.Mui-focused fieldset': { borderColor: '#000' },
-                                    },
-                                    '& .MuiInputLabel-root': { '&.Mui-focused': { color: '#000' } },
-                                }}
-                                FormHelperTextProps={{ sx: { marginLeft: 0 } }}
-                            />
+                        <DialogContent>
+                            <TextField label='Name' value={name} onChange={(e) => setName(e.target.value)} error={!!errors.name} helperText={errors.name} fullWidth margin='normal' />
+                            <TextField label='Email' value={email} onChange={(e) => setEmail(e.target.value)} error={!!errors.email} helperText={errors.email} fullWidth margin='normal' />
                             <TextField
                                 label='Phone Number'
                                 value={phone}
-                                onChange={(e) => {
-                                    setPhone(e.target.value)
-                                    if (errors.phone) setErrors({ ...errors, phone: undefined })
-                                }}
-                                fullWidth
-                                margin='normal'
+                                onChange={(e) => setPhone(e.target.value)}
                                 error={!!errors.phone}
                                 helperText={errors.phone}
-                                required
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        '&.Mui-focused fieldset': { borderColor: '#000' },
-                                    },
-                                    '& .MuiInputLabel-root': { '&.Mui-focused': { color: '#000' } },
-                                }}
+                                fullWidth
+                                margin='normal'
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position='start'>
-                                            <Select
-                                                value={countryCode}
-                                                onChange={(e) => setCountryCode(e.target.value)}
-                                                variant='standard'
-                                                disableUnderline
-                                                sx={{ mr: 1 }}
-                                            >
+                                            <Select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} variant='standard' disableUnderline>
                                                 {countries.map((c) => (
                                                     <MenuItem key={c.code} value={c.dial}>
                                                         <FlagIcon countryCode={c.code} svg style={{ marginRight: 8 }} />
@@ -404,16 +387,21 @@ export const Home: React.FC = () => {
                                         </InputAdornment>
                                     ),
                                 }}
-                                FormHelperTextProps={{ sx: { marginLeft: 0 } }}
+                            />
+                            <TextField
+                                label='Start Date'
+                                type='date'
+                                InputLabelProps={{ shrink: true }}
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                error={!!errors.startDate}
+                                helperText={errors.startDate}
+                                fullWidth
+                                margin='normal'
                             />
                         </DialogContent>
-                        <DialogActions sx={{ px: 3, pb: 2 }}>
-                            <Button
-                                variant='contained'
-                                sx={{ borderRadius: 25, textTransform: 'none', color: '#fff', backgroundColor: '#000' }}
-                                onClick={handleSave}
-                                endIcon={<SendIcon />}  
-                            >
+                        <DialogActions sx={{ py: 2 }}>
+                            <Button variant='contained' onClick={handleSave} endIcon={<SendIcon />} sx={{ mr: 2, backgroundColor: '#000', color: '#fff' }}>
                                 Submit
                             </Button>
                         </DialogActions>
