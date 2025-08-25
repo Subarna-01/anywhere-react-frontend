@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useRef, useState } from "react";
 import {
     Box,
     Typography,
@@ -28,6 +28,10 @@ import img_220332 from '../assets/220332.jpg'
 import img_220356 from '../assets/220356.jpg'
 import img_230515 from '../assets/230515.jpg'
 import img_233415 from '../assets/233415.jpg'
+import img_225315 from '../assets/225315.jpg';
+import img_225515 from '../assets/225515.jpg';
+import img_225615 from '../assets/225615.jpg';
+import img_225715 from '../assets/225715.jpg';
 
 const tourPackages = [
     {
@@ -83,24 +87,40 @@ export const Home: React.FC = () => {
     }
 
     const handleDialogBoxClose = () => {
-        setName('')
-        setPhone('')
-        setEmail('')
-        setStartDate('')
-        setErrors({})
-        setIsSubmitted(false)
-        setResponseError(false)
         setIsDialogBoxVisible(false)
+        setTimeout(() => {
+            setName('');
+            setPhone('');
+            setEmail('');
+            setStartDate('');
+            setErrors({});
+            setIsSubmitted(false);
+            setResponseError(false);
+        }, 200);
     }
+
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const totalPages = 3;
+    const intervalTime = 2000;
+
+    const handleScroll = () => {
+        if (scrollRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+            const page = Math.round((scrollLeft / (scrollWidth - clientWidth)) * (totalPages - 1));
+            setActiveIndex(page);
+        }
+    };
 
     const handleSave = async () => {
         const newErrors: typeof errors = {}
-        if (!name.trim()) newErrors.name = 'Name is required'
-        if (!email.trim()) newErrors.email = 'Email is required'
-        else if (!validateEmail(email)) newErrors.email = 'Invalid email address'
-        if (!phone.trim()) newErrors.phone = 'Phone number is required'
-        else if (!validatePhoneNumber(phone)) newErrors.phone = 'Phone number must be digits only'
-        if (!startDate.trim()) newErrors.startDate = 'Start date is required'
+        if (!name.trim()) newErrors.name = 'Name is required!'
+        if (!email.trim()) newErrors.email = 'Email is required!'
+        else if (!validateEmail(email)) newErrors.email = 'Invalid email address!'
+        if (!phone.trim()) newErrors.phone = 'Phone number is required!'
+        else if (!validatePhoneNumber(phone)) newErrors.phone = 'Phone number must be digits only!'
+        if (!startDate.trim()) newErrors.startDate = 'Start date is required!'
         setErrors(newErrors)
         if (Object.keys(newErrors).length === 0) {
             setLoading(true)
@@ -150,6 +170,29 @@ export const Home: React.FC = () => {
         }, 100)
         return () => clearInterval(interval)
     }, [visible])
+
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            if (scrollRef.current) {
+                const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+                const pageWidth = clientWidth;
+                let nextPage = activeIndex + 1;
+
+                if (nextPage >= totalPages) {
+                    nextPage = 0;
+                }
+
+                scrollRef.current.scrollTo({
+                    left: nextPage * pageWidth,
+                    behavior: "smooth",
+                });
+
+                setActiveIndex(nextPage);
+            }
+        }, intervalTime);
+
+        return () => clearInterval(interval);
+    }, [activeIndex]);
 
     return (
         <Box sx={{ flex: 1 }}>
@@ -237,27 +280,57 @@ export const Home: React.FC = () => {
                 </Typography>
             </Box>
             <Box
+                ref={scrollRef}
+                onScroll={handleScroll}
                 sx={{
                     px: 2,
-                    py: 2,
-                    display: { xs: 'flex', sm: 'grid' },
+                    py: 2.5,
                     gap: 2,
-                    gridTemplateColumns: { sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-                    overflowX: { xs: 'auto', sm: 'unset' },
-                    scrollSnapType: { xs: 'x mandatory', sm: 'unset' }
+                    display: { xs: "flex", sm: "grid" },
+                    gridTemplateColumns: { sm: "1fr 1fr", md: "1fr 1fr 1fr" },
+                    overflowX: { xs: "auto", sm: "unset" },
+                    scrollSnapType: { xs: "x mandatory", sm: "unset" },
+                    msOverflowStyle: "none",
+                    scrollbarWidth: "none",
+                    "&::-webkit-scrollbar": {
+                        display: "none",
+                    },
                 }}
             >
                 {tourPackages.map((pkg, idx) => (
-                    <Card key={idx} sx={{ flex: { xs: '0 0 100%', sm: 'unset' }, scrollSnapAlign: { xs: 'center', sm: 'unset' }, borderRadius: 0 }}>
+                    <Card
+                        key={idx}
+                        sx={{
+                            minHeight: 150,
+                            maxWidth: 420,
+                            flex: { xs: "0 0 100%", sm: "unset" },
+                            scrollSnapAlign: { xs: "center", sm: "unset" },
+                            display: "flex",
+                            flexDirection: "column",
+                            borderRadius: 0,
+                            boxShadow: 5,
+                            transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                            "&:hover": {
+                                transform: "scale(1.03)",
+                                boxShadow: 7.5,
+                            },
+                        }}
+                    >
                         <CardMedia sx={{ height: 200 }} image={pkg.coverImage} />
-                        <CardContent>
-                            <Typography variant='h5'>{pkg.packageName}</Typography>
-                            <Typography color='text.secondary'>{pkg.packageDescription}</Typography>
+                        <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography variant="h5" sx={{ fontSize: { xs: '1.5rem', sm: '1.5rem', md: '1.5rem' } }}>{pkg.packageName}</Typography>
+                            <Typography color="text.secondary" sx={{ mt: 1.5, fontSize: { xs: '0.85rem', sm: '0.95rem', md: '0.95rem' } }}>
+                                {pkg.packageDescription}
+                            </Typography>
                         </CardContent>
-                        <CardActions sx={{ justifyContent: 'center' }}>
+                        <CardActions sx={{ mt: "auto", py: 2, justifyContent: "center" }}>
                             <Button
-                                variant='contained'
-                                sx={{ borderRadius: 25, backgroundColor: '#000', color: '#fff' }}
+                                variant="contained"
+                                sx={{
+                                    borderRadius: 25,
+                                    backgroundColor: "#000",
+                                    color: "#fff",
+                                }}
                                 onClick={() => handleDialogBoxOpen(pkg.tourPackageName)}
                             >
                                 Book Now
@@ -268,38 +341,178 @@ export const Home: React.FC = () => {
             </Box>
             <Box
                 sx={{
+                    display: { xs: "flex", sm: "none" },
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 1,
+                    my: 1.5,
+                }}
+            >
+                {[...Array(totalPages)].map((_, i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            backgroundColor: i === activeIndex ? "black" : "grey.400",
+                            transition: "all 0.3s ease",
+                        }}
+                    />
+                ))}
+            </Box>
+            <Box
+                sx={{
+                    py: 5,
+                    px: 4,
+                    mt: 5,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 5,
+                    backgroundColor: '#fff',
+                }}
+            >
+                <Typography
+                    variant='h4'
+                    sx={{
+                        fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                        fontWeight: 700,
+                        mb: 0,
+                        textAlign: 'center',
+                        background: 'linear-gradient(90deg, #ffdf00, #000)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                    }}
+                >
+                    Best Time to Visit Bhutan
+                </Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        gap: { xs: 2, sm: 3 },
+                        px: { xs: 1, sm: 0 },
+                        width: '100%',
+                        maxWidth: '1200px',
+                        overflowX: { xs: 'auto', sm: 'visible' },
+                        paddingBottom: { xs: 2, sm: 0 },
+                        scrollSnapType: { xs: 'x mandatory', sm: 'none' },
+                        scrollbarWidth: 'none',
+                        '&::-webkit-scrollbar': {
+                            display: 'none',
+                        }
+                    }}
+                >
+                    {[
+                        { season: 'Spring', months: 'Mar - May', description: 'Blossoming flowers, pleasant weather, ideal for trekking and cultural festivals.', image: img_225715 },
+                        { season: 'Summer', months: 'Jun - Aug', description: 'Monsoon season, lush green landscapes, fewer tourists, some trails may be slippery.', image: img_225315 },
+                        { season: 'Autumn', months: 'Sep - Nov', description: 'Clear skies, vibrant festivals, great for photography and sightseeing.', image: img_225615 },
+                        { season: 'Winter', months: 'Dec - Feb', description: 'Cool and crisp weather, snow-capped mountains, perfect for cultural experiences.', image: img_225515 },
+                    ].map((item, idx) => (
+                        <Card
+                            key={idx}
+                            sx={{
+                                borderRadius: 0,
+                                boxShadow: 3,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                backgroundColor: '#fefefe',
+                                flexShrink: 0,
+                                width: { xs: '100%', sm: '280px' },
+                                scrollSnapAlign: { xs: 'center', sm: 'none' },
+                                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                '&:hover': { transform: 'translateY(-5px)', boxShadow: 6 },
+                            }}
+                        >
+                            <CardMedia
+                                component="img"
+                                height="140"
+                                image={item.image}
+                                alt={item.season}
+                            />
+                            <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                                <Typography
+                                    variant='h6'
+                                    sx={{
+                                        fontWeight: 700,
+                                        mb: 0.5,
+                                        textAlign: 'center',
+                                        fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.3rem' },
+                                        background: 'linear-gradient(90deg, #000, #555)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                    }}
+                                >
+                                    {item.season}
+                                </Typography>
+                                <Typography
+                                    variant='subtitle2'
+                                    sx={{
+                                        fontWeight: 500,
+                                        mb: 1,
+                                        textAlign: 'center',
+                                        fontSize: { xs: '0.95rem', sm: '1rem', md: '1.05rem' },
+                                        background: 'linear-gradient(90deg, #333, #777)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                    }}
+                                >
+                                    {item.months}
+                                </Typography>
+                                <Typography
+                                    variant='body2'
+                                    sx={{
+                                        textAlign: 'center',
+                                        fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' },
+                                        color: '#333',
+                                    }}
+                                >
+                                    {item.description}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </Box>
+            </Box>
+            <Box
+                sx={{
                     py: 10,
+                    mt: 5,
                     display: 'flex',
                     flexDirection: { xs: 'column', md: 'row' },
                     justifyContent: 'center',
                     alignItems: 'center',
                     textAlign: { xs: 'center', md: 'left' },
                     px: 2,
-                    gap: 4,
+                    gap: 6,
+                    background: 'linear-gradient(135deg, #000000, #1a1a1a)',
+                    color: '#f5f5f5',
                 }}
             >
-                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' }, px: { xs: 0, md: 0 } }}>
+                <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
                     <Typography
                         variant='h4'
                         sx={{
-                            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.25rem' },
+                            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
                             mb: 2,
                             fontWeight: '700',
-                            textAlign: { xs: 'center', md: 'left' },
-                            background: 'linear-gradient(90deg, #ff8a00, #e52e71)',
+                            background: 'linear-gradient(90deg, #ffffff, #888888)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
-                            color: 'transparent'
+                            color: 'transparent',
                         }}
                     >
                         Know About Bhutan
                     </Typography>
+
                     <Typography
                         sx={{
                             maxWidth: '45rem',
-                            fontSize: { xs: '0.95rem', sm: '1rem', md: '1.15rem' },
-                            textAlign: { xs: 'center', md: 'left' }
+                            fontSize: { xs: '0.9rem', sm: '1rem', md: '1.15rem' },
+                            opacity: 0.9,
                         }}
                     >
                         Bhutan, the Land of the Thunder Dragon, is known for its pristine natural beauty,
@@ -307,6 +520,7 @@ export const Home: React.FC = () => {
                         Monastery to the lush valleys of Paro and Punakha, Bhutan offers an unforgettable
                         journey where tradition and tranquility coexist.
                     </Typography>
+
                     <Link
                         href='https://www.indembthimphu.gov.in/pages/MzE5'
                         target='_blank'
@@ -316,12 +530,10 @@ export const Home: React.FC = () => {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 0.5,
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
-                            textAlign: { xs: 'center', md: 'left' },
                             fontSize: { xs: '0.75rem', sm: '0.95rem', md: '1rem' },
-                            color: '#f97316',
-                            '&:hover': { color: '#c2410c' }
+                            color: '#e0e0e0',
+                            transition: 'color 0.3s ease',
+                            '&:hover': { color: '#ffffff' },
                         }}
                     >
                         View documents required to travel for Indians
@@ -333,53 +545,162 @@ export const Home: React.FC = () => {
                         component='img'
                         src={img_233415}
                         alt='Dochula Pass'
-                        sx={{ width: '100%', maxWidth: 600 }}
+                        sx={{
+                            width: '100%',
+                            maxWidth: 550,
+                            borderRadius: 0,
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.6)',
+                        }}
                     />
                 </Box>
             </Box>
-            <Dialog open={isDialogBoxVisible} onClose={handleDialogBoxClose} fullWidth maxWidth='sm' PaperProps={{ sx: { borderRadius: 0 } }}>
+            <Dialog
+                open={isDialogBoxVisible}
+                onClose={handleDialogBoxClose}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{ sx: { borderRadius: 0 } }}
+            >
                 <DialogTitle>
-                    Get a Quote
-                    <IconButton onClick={handleDialogBoxClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                    Send Enquiry
+                    <IconButton
+                        onClick={handleDialogBoxClose}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
+                    >
                         <CloseIcon />
                     </IconButton>
                 </DialogTitle>
+
                 {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-                        <CircularProgress sx={{ color: '#000' }} />
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minHeight: 200,
+                        }}
+                    >
+                        <CircularProgress sx={{ color: "#000" }} />
                     </Box>
                 ) : isSubmitted ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', minHeight: 200, px: 3 }}>
-                        <Typography sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            textAlign: "center",
+                            minHeight: 200,
+                            px: 3,
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
+                            }}
+                        >
                             We have received your request, we will get back to you soon!
                         </Typography>
                     </Box>
                 ) : responseError ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', minHeight: 200, px: 3 }}>
-                        <Typography sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            textAlign: "center",
+                            minHeight: 200,
+                            px: 3,
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
+                            }}
+                        >
                             Something went wrong, please try again later.
                         </Typography>
                     </Box>
                 ) : (
                     <>
                         <DialogContent>
-                            <TextField label='Name' value={name} onChange={(e) => setName(e.target.value)} error={!!errors.name} helperText={errors.name} fullWidth margin='normal' />
-                            <TextField label='Email' value={email} onChange={(e) => setEmail(e.target.value)} error={!!errors.email} helperText={errors.email} fullWidth margin='normal' />
                             <TextField
-                                label='Phone Number'
+                                label="Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                error={!!errors.name}
+                                helperText={errors.name}
+                                fullWidth
+                                required
+                                margin="normal"
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
+                                        "&:hover fieldset": { borderColor: "black" },
+                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiFormHelperText-root": {
+                                        marginLeft: 0,
+                                    },
+                                }}
+                            />
+                            <TextField
+                                label="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                required
+                                fullWidth
+                                margin="normal"
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
+                                        "&:hover fieldset": { borderColor: "black" },
+                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiFormHelperText-root": {
+                                        marginLeft: 0,
+                                    },
+                                }}
+                            />
+                            <TextField
+                                label="Phone Number"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 error={!!errors.phone}
                                 helperText={errors.phone}
+                                required
                                 fullWidth
-                                margin='normal'
+                                margin="normal"
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
+                                        "&:hover fieldset": { borderColor: "black" },
+                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiFormHelperText-root": {
+                                        marginLeft: 0,
+                                    },
+                                }}
                                 InputProps={{
                                     startAdornment: (
-                                        <InputAdornment position='start'>
-                                            <Select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} variant='standard' disableUnderline>
+                                        <InputAdornment position="start">
+                                            <Select
+                                                value={countryCode}
+                                                onChange={(e) => setCountryCode(e.target.value)}
+                                                variant="standard"
+                                                disableUnderline
+                                            >
                                                 {countries.map((c) => (
                                                     <MenuItem key={c.code} value={c.dial}>
-                                                        <FlagIcon countryCode={c.code} svg style={{ marginRight: 8 }} />
+                                                        <FlagIcon
+                                                            countryCode={c.code}
+                                                            svg
+                                                            style={{ marginRight: 8 }}
+                                                        />
                                                         {c.dial}
                                                     </MenuItem>
                                                 ))}
@@ -389,19 +710,41 @@ export const Home: React.FC = () => {
                                 }}
                             />
                             <TextField
-                                label='Start Date'
-                                type='date'
+                                label="Start Date"
+                                type="date"
+                                required
                                 InputLabelProps={{ shrink: true }}
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
                                 error={!!errors.startDate}
                                 helperText={errors.startDate}
                                 fullWidth
-                                margin='normal'
+                                margin="normal"
+                                sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
+                                        "&:hover fieldset": { borderColor: "black" },
+                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                    },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiFormHelperText-root": {
+                                        marginLeft: 0,
+                                    },
+                                }}
                             />
                         </DialogContent>
                         <DialogActions sx={{ py: 2 }}>
-                            <Button variant='contained' onClick={handleSave} endIcon={<SendIcon />} sx={{ mr: 2, backgroundColor: '#000', color: '#fff' }}>
+                            <Button
+                                variant="contained"
+                                onClick={handleSave}
+                                endIcon={<SendIcon />}
+                                sx={{
+                                    mr: 2,
+                                    borderRadius: 25,
+                                    backgroundColor: "#000",
+                                    color: "#fff",
+                                }}
+                            >
                                 Submit
                             </Button>
                         </DialogActions>

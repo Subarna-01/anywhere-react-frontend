@@ -39,11 +39,11 @@ export const Navbar: React.FC = () => {
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
                 color: '#000',
-                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                backgroundColor: 'rgba(255, 255, 255, 0.5)'
             }}
         >
             <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <Box sx={{ gap: 3, display: 'flex', alignItems: 'center' }}>
                     <Typography
                         variant='h6'
                         sx={{
@@ -52,7 +52,6 @@ export const Navbar: React.FC = () => {
                     >
                         Anywhere
                     </Typography>
-
                     {!isMobile && (
                         <>
                             <Button
@@ -60,13 +59,13 @@ export const Navbar: React.FC = () => {
                                 to='/'
                                 disableRipple
                                 sx={{
-                                    color: '#000',
                                     textTransform: 'none',
                                     fontSize: '1rem',
+                                    color: '#000',
                                     '&:hover': {
                                         backgroundColor: 'transparent',
                                         textDecoration: 'underline',
-                                    },
+                                    }
                                 }}
                             >
                                 Home
@@ -76,13 +75,13 @@ export const Navbar: React.FC = () => {
                                 to='/about'
                                 disableRipple
                                 sx={{
-                                    color: '#000',
                                     textTransform: 'none',
                                     fontSize: '1rem',
+                                    color: '#000',
                                     '&:hover': {
                                         backgroundColor: 'transparent',
                                         textDecoration: 'underline',
-                                    },
+                                    }
                                 }}
                             >
                                 About Us
