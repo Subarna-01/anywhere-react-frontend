@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
             >
                 <Box>
                     <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: '#111' }}>
-                        Travel with Anywhere
+                        Anywhere Trips
                     </Typography>
                     <Typography variant='body2' sx={{ maxWidth: 320, lineHeight: 1.6, color: 'text.secondary' }}>
                         Anywhere is your trusted companion for seamless journeys,
