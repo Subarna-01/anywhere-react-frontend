@@ -120,7 +120,7 @@ export const Home: React.FC = () => {
         else if (!validateEmail(email)) newErrors.email = 'Invalid email address!'
         if (!phone.trim()) newErrors.phone = 'Phone number is required!'
         else if (!validatePhoneNumber(phone)) newErrors.phone = 'Phone number must be digits only!'
-        if (!startDate.trim()) newErrors.startDate = 'Start date is required!'
+        if (!startDate.trim()) newErrors.startDate = 'Journey date is required!'
         setErrors(newErrors)
         if (Object.keys(newErrors).length === 0) {
             setLoading(true)
@@ -710,7 +710,7 @@ export const Home: React.FC = () => {
                                 }}
                             />
                             <TextField
-                                label="Start Date"
+                                label="Journey Date"
                                 type="date"
                                 required
                                 InputLabelProps={{ shrink: true }}
