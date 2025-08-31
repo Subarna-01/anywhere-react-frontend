@@ -25,16 +25,16 @@ export const Footer: React.FC = () => {
                 }}
             >
                 <Box>
-                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: '#111' }}>
-                        Anywhere Trips
+                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: '#00ad83' }}>
+                        anywhere.trips
                     </Typography>
                     <Typography variant='body2' sx={{ maxWidth: 320, lineHeight: 1.6, color: 'text.secondary' }}>
-                        Anywhere is your trusted companion for seamless journeys,
+                        anywhere.trips is your trusted companion for seamless journeys,
                         offering personalized travel experiences that inspire and connect.
                     </Typography>
                 </Box>
                 <Box>
-                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: '#111' }}>
+                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: "#00ad83" }}>
                         Contact Us
                     </Typography>
                     <Box sx={{ mb: 1.2, gap: 1, display: 'flex', alignItems: 'center', color: 'text.primary' }}>
@@ -50,7 +50,7 @@ export const Footer: React.FC = () => {
                     </Typography>
                 </Box>
                 <Box>
-                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: '#111' }}>
+                    <Typography variant='h6' sx={{ mb: 1.5, fontWeight: 500, color: "#00ad83" }}>
                         Stay Connected
                     </Typography>
                     <Box sx={{ gap: 1.2, display: 'flex', flexDirection: 'column' }}>
@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
             <Divider sx={{ my: 4 }} />
             <Box sx={{ textAlign: 'center' }}>
                 <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                    © {new Date().getFullYear()} Anywhere Travels. All rights reserved.
+                    © {new Date().getFullYear()} anywhere.trips. All rights reserved.
                 </Typography>
             </Box>
         </Box >

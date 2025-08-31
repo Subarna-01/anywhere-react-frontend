@@ -380,7 +380,7 @@ export const Home: React.FC = () => {
                         fontWeight: 700,
                         mb: 0,
                         textAlign: 'center',
-                        background: 'linear-gradient(90deg, #ffdf00, #000)',
+                        background: 'linear-gradient(135deg, #065e48ff, #00ad83, #66e2c4)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                     }}
@@ -487,8 +487,8 @@ export const Home: React.FC = () => {
                     textAlign: { xs: 'center', md: 'left' },
                     px: 2,
                     gap: 6,
-                    background: 'linear-gradient(135deg, #000000, #1a1a1a)',
-                    color: '#f5f5f5',
+                    backgroundColor: "#fff",
+                    color: "text.secondary",
                 }}
             >
                 <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
@@ -498,7 +498,7 @@ export const Home: React.FC = () => {
                             fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
                             mb: 2,
                             fontWeight: '700',
-                            background: 'linear-gradient(90deg, #ffffff, #888888)',
+                            background: 'linear-gradient(135deg, #065e48ff, #00ad83, #66e2c4)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
@@ -531,9 +531,9 @@ export const Home: React.FC = () => {
                             alignItems: 'center',
                             gap: 0.5,
                             fontSize: { xs: '0.75rem', sm: '0.95rem', md: '1rem' },
-                            color: '#e0e0e0',
+                            color: '#333',
                             transition: 'color 0.3s ease',
-                            '&:hover': { color: '#ffffff' },
+                            '&:hover': { color: '#000' },
                         }}
                     >
                         View documents required to travel for Indians
@@ -549,7 +549,7 @@ export const Home: React.FC = () => {
                             width: '100%',
                             maxWidth: 550,
                             borderRadius: 0,
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.6)',
+                            // boxShadow: '0 10px 25px rgba(0,0,0,0.6)',
                         }}
                     />
                 </Box>
@@ -580,7 +580,7 @@ export const Home: React.FC = () => {
                             minHeight: 200,
                         }}
                     >
-                        <CircularProgress sx={{ color: "#000" }} />
+                        <CircularProgress sx={{ color: "#00ad83" }} />
                     </Box>
                 ) : isSubmitted ? (
                     <Box
@@ -634,11 +634,11 @@ export const Home: React.FC = () => {
                                 margin="normal"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
-                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
-                                        "&:hover fieldset": { borderColor: "black" },
-                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                        "& fieldset": { borderColor: "#00ad83" },
+                                        "&:hover fieldset": { borderColor: "#00ad83" },
+                                        "&.Mui-focused fieldset": { borderColor: "#00ad83" },
                                     },
-                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "#00ad83" },
                                     "& .MuiFormHelperText-root": {
                                         marginLeft: 0,
                                     },
@@ -655,11 +655,11 @@ export const Home: React.FC = () => {
                                 margin="normal"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
-                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
-                                        "&:hover fieldset": { borderColor: "black" },
-                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                        "& fieldset": { borderColor: "#00ad83" },
+                                        "&:hover fieldset": { borderColor: "#00ad83" },
+                                        "&.Mui-focused fieldset": { borderColor: "#00ad83" },
                                     },
-                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "#00ad83" },
                                     "& .MuiFormHelperText-root": {
                                         marginLeft: 0,
                                     },
@@ -676,11 +676,11 @@ export const Home: React.FC = () => {
                                 margin="normal"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
-                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
-                                        "&:hover fieldset": { borderColor: "black" },
-                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                        "& fieldset": { borderColor: "#00ad83)" },
+                                        "&:hover fieldset": { borderColor: "#00ad83" },
+                                        "&.Mui-focused fieldset": { borderColor: "#00ad83" },
                                     },
-                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "#00ad83" },
                                     "& .MuiFormHelperText-root": {
                                         marginLeft: 0,
                                     },
@@ -722,11 +722,11 @@ export const Home: React.FC = () => {
                                 margin="normal"
                                 sx={{
                                     "& .MuiOutlinedInput-root": {
-                                        "& fieldset": { borderColor: "rgba(0,0,0,0.3)" },
-                                        "&:hover fieldset": { borderColor: "black" },
-                                        "&.Mui-focused fieldset": { borderColor: "black" },
+                                        "& fieldset": { borderColor: "#00ad83" },
+                                        "&:hover fieldset": { borderColor: "#00ad83" },
+                                        "&.Mui-focused fieldset": { borderColor: "#00ad83" },
                                     },
-                                    "& .MuiInputLabel-root.Mui-focused": { color: "black" },
+                                    "& .MuiInputLabel-root.Mui-focused": { color: "#00ad83" },
                                     "& .MuiFormHelperText-root": {
                                         marginLeft: 0,
                                     },
@@ -741,7 +741,7 @@ export const Home: React.FC = () => {
                                 sx={{
                                     mr: 2,
                                     borderRadius: 25,
-                                    backgroundColor: "#000",
+                                    backgroundColor: "#00ad83",
                                     color: "#fff",
                                 }}
                             >

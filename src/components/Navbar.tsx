@@ -48,9 +48,10 @@ export const Navbar: React.FC = () => {
                         variant='h6'
                         sx={{
                             fontSize: { xs: '1.2rem', sm: '1.5rem' },
+                            color: "#00ad83"
                         }}
                     >
-                        Anywhere
+                        anywhere.trips
                     </Typography>
                     {!isMobile && (
                         <>
